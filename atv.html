@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Jogo da Velha</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin: 20px 0;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: #ccc;
+}
+
+.status {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+    </style>
+    <script language="javascript">
+        let currentPlayer = 'X';
+let gameBoard = ['', '', '', '', '', '', '', '', ''];
+let gameActive = true;
+
+function renderBoard() {
+    const boardElement = document.getElementById('board');
+    boardElement.innerHTML = '';
+
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.setAttribute('data-index', i);
+        cell.addEventListener('click', () => cellClick(i));
+        cell.textContent = gameBoard[i];
+        boardElement.appendChild(cell);
+    }
+}
+
+function cellClick(index) {
+    if (!gameBoard[index] && gameActive) {
+        gameBoard[index] = currentPlayer;
+        renderBoard();
+        checkWinner();
+        togglePlayer();
+    }
+}
+
+function togglePlayer() {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    updateStatus();
+}
+
+function checkWinner() {
+    const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6]              
+    ];
+
+    for (const combination of winningCombinations) {
+        const [a, b, c] = combination;
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            gameActive = false;
+            document.getElementById('status').textContent = `Jogador ${currentPlayer} venceu!`;
+            return;
+        }
+    }
+
+    if (!gameBoard.includes('')) {
+        gameActive = false;
+        document.getElementById('status').textContent = 'Empate!';
+    }
+}
+
+function updateStatus() {
+    document.getElementById('status').textContent = `Jogador atual: ${currentPlayer}`;
+}
+
+function resetGame() {
+    currentPlayer = 'X';
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    updateStatus();
+    renderBoard();
+}
+
+updateStatus();
+renderBoard();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo da Velha</h1>
+        <div id="board" class="board"></div>
+        <p id="status" class="status"></p>
+        <button id="resetButton" onclick="resetGame()">Reiniciar Jogo</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
